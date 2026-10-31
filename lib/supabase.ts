@@ -1,0 +1,25 @@
+import 'react-native-url-polyfill/auto';
+
+import { createClient } from '@supabase/supabase-js';
+
+import { authStorage } from './auth-storage';
+
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY — copy .env.example to .env.'
+  );
+}
+
+// Only the public anon key belongs in the client; access is enforced by the
+// row level security policies in supabase/migrations.
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: authStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
